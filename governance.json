@@ -1,0 +1,88 @@
+{
+  "apiVersion": "pardo.ai/v0",
+  "kind": "ProjectGovernance",
+  "metadata": {
+    "id": "pardo-infra",
+    "name": "PARDO Infra Governance",
+    "version": "0.1.0",
+    "status": "experimental"
+  },
+  "spec": {
+    "modelPolicy": {
+      "classBindings": {
+        "project-default": "openai/gpt-5.6-sol"
+      },
+      "allow": [
+        "openai/gpt-5.6-sol"
+      ]
+    },
+    "sandboxPolicy": {
+      "required": true,
+      "scope": "agent",
+      "workspaceAccess": "none",
+      "network": "none",
+      "elevated": false
+    },
+    "agents": {
+      "main": {
+        "templateId": "infra-control",
+        "skills": [],
+        "delegation": {
+          "allowAgents": [
+            "infra-auditor",
+            "infra-operator"
+          ],
+          "requireAgentId": true
+        }
+      },
+      "infra-auditor": {
+        "templateId": "infra-auditor",
+        "skills": [],
+        "delegation": {
+          "allowAgents": [],
+          "requireAgentId": true
+        },
+        "tools": {
+          "deny": [
+            "sessions_spawn",
+            "subagents",
+            "sessions_send",
+            "sessions_list",
+            "sessions_history",
+            "sessions_search",
+            "sessions_yield",
+            "image"
+          ]
+        },
+        "capabilities": {
+          "allow": [],
+          "mutations": "deny"
+        }
+      },
+      "infra-operator": {
+        "templateId": "infra-operator",
+        "skills": [],
+        "delegation": {
+          "allowAgents": [],
+          "requireAgentId": true
+        },
+        "tools": {
+          "deny": [
+            "sessions_spawn",
+            "subagents",
+            "sessions_send",
+            "sessions_list",
+            "sessions_history",
+            "sessions_search",
+            "sessions_yield",
+            "image"
+          ]
+        },
+        "capabilities": {
+          "allow": [],
+          "mutations": "approval-required"
+        }
+      }
+    }
+  }
+}
