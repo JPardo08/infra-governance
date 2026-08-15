@@ -9,78 +9,54 @@
   },
   "spec": {
     "modelPolicy": {
-      "classBindings": {
-        "project-default": "openai/gpt-5.6-sol"
-      },
-      "allow": [
-        "openai/gpt-5.6-sol"
-      ]
+      "defaultClass": "project-default",
+      "provider": "openai",
+      "selection": "runtime-default"
     },
-    "sandboxPolicy": {
-      "required": true,
-      "scope": "agent",
-      "workspaceAccess": "none",
-      "network": "none",
-      "elevated": false
+    "defaults": {
+      "sandbox": {
+        "required": true,
+        "isolationScope": "agent",
+        "workspaceAccess": "none",
+        "network": "none",
+        "elevated": false
+      },
+      "skills": {
+        "allow": []
+      },
+      "capabilities": {
+        "allow": []
+      }
     },
     "agents": {
-      "main": {
-        "templateId": "infra-control",
-        "skills": [],
+      "infra-control": {
+        "role": "coordinator",
+        "orchestration": "root",
+        "mutations": "deny",
         "delegation": {
-          "allowAgents": [
+          "allow": [
             "infra-auditor",
             "infra-operator"
           ],
-          "requireAgentId": true
+          "requireExplicitTarget": true
         }
       },
       "infra-auditor": {
-        "templateId": "infra-auditor",
-        "skills": [],
+        "role": "auditor",
+        "orchestration": "leaf",
+        "mutations": "deny",
         "delegation": {
-          "allowAgents": [],
-          "requireAgentId": true
-        },
-        "tools": {
-          "deny": [
-            "sessions_spawn",
-            "subagents",
-            "sessions_send",
-            "sessions_list",
-            "sessions_history",
-            "sessions_search",
-            "sessions_yield",
-            "image"
-          ]
-        },
-        "capabilities": {
           "allow": [],
-          "mutations": "deny"
+          "requireExplicitTarget": true
         }
       },
       "infra-operator": {
-        "templateId": "infra-operator",
-        "skills": [],
+        "role": "operator",
+        "orchestration": "leaf",
+        "mutations": "approval-required",
         "delegation": {
-          "allowAgents": [],
-          "requireAgentId": true
-        },
-        "tools": {
-          "deny": [
-            "sessions_spawn",
-            "subagents",
-            "sessions_send",
-            "sessions_list",
-            "sessions_history",
-            "sessions_search",
-            "sessions_yield",
-            "image"
-          ]
-        },
-        "capabilities": {
           "allow": [],
-          "mutations": "approval-required"
+          "requireExplicitTarget": true
         }
       }
     }
