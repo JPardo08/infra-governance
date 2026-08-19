@@ -2,45 +2,35 @@
 
 Governance policy for the PARDO Infra agent topology.
 
-## Scope
+V1 answers a single question:
 
-This repository defines effective authority constraints for:
+**WHO may perform WHICH capability ON WHICH resource.**
 
-- Infra Control
-- Infra Auditor
-- Infra Operator
+| Agent | Capability | Resource | Execute | Mutate |
+| --- | --- | --- | --- | --- |
+| `infra-auditor` | `storage.health@1.0.0` | `nas-primary` | allow | deny |
+| `infra-control` | `storage.health@1.0.0` | `nas-primary` | deny | deny |
+| `infra-operator` | `storage.health@1.0.0` | `nas-primary` | deny | approval-required (no grant) |
 
-It does not contain agent behavior or deployment implementation.
+Deny by default. `spec.defaults.capabilities.allow` remains `[]`.
+Authority exists only as an explicit grant.
 
-## Responsibilities
+`infra-control` remains the orchestration root and may delegate to
+`infra-auditor` and `infra-operator`. Delegation is not an execute grant.
 
-Governance defines:
+## Boundaries
 
-- approved model policy;
-- sandbox requirements;
-- network and elevation boundaries;
-- delegation authority;
-- skill visibility;
-- tool restrictions;
-- capability and mutation boundaries.
+| Layer | Owns |
+| --- | --- |
+| Governance | `agentId` ↔ `capability` ↔ `resourceRef` |
+| ToolFactory | capability implementation |
+| DeploymentFactory | runtime / materialization |
+| Backend | credentials, DSM roles, network identity |
 
-## Separation of concerns
+Governance does not contain `synology-primary`, Tailscale, DSM, MCP, or
+hostnames.
 
-AgentFactory defines what an agent is.
+## Evaluator
 
-GovernanceFactory defines what an instantiated agent may do.
-
-DeploymentFactory translates these policies into the target runtime and verifies
-that the effective environment satisfies them.
-
-ToolFactory provides the capabilities that Governance may allow.
-
-## Current V0
-
-Infra Auditor has no infrastructure capabilities and may not mutate
-infrastructure.
-
-Infra Operator has no mutating capability granted yet. Future mutations require
-an approved capability and the corresponding approval policy.
-
-Infra Control is the only orchestration root for this project.
+`pardo_governance` loads `governance.json` and exposes `authorize` and
+`resolve_owner`. It does not talk to OpenClaw, MCP, or DeploymentFactory.

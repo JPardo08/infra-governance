@@ -4,7 +4,7 @@
   "metadata": {
     "id": "pardo-infra",
     "name": "PARDO Infra Governance",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "status": "experimental"
   },
   "spec": {
@@ -59,6 +59,26 @@
           "requireExplicitTarget": true
         }
       }
-    }
+    },
+    "resources": {
+      "nas-primary": {
+        "type": "storage-system"
+      }
+    },
+    "capabilityRegistry": {
+      "storage.health@1.0.0": {
+        "id": "storage.health",
+        "version": "1.0.0"
+      }
+    },
+    "grants": [
+      {
+        "id": "infra-auditor-storage-health-nas-primary",
+        "agentId": "infra-auditor",
+        "action": "execute",
+        "capability": "storage.health@1.0.0",
+        "resourceRef": "nas-primary"
+      }
+    ]
   }
 }
