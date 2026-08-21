@@ -1,4 +1,4 @@
-# PARDO Infra Governance
+# Infra Governance
 
 Governance policy for the PARDO Infra agent topology.
 
